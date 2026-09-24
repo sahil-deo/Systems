@@ -5,4 +5,21 @@ set(CMAKE_CXX_STANDARD 20)
 project(darr)
 
 add_executable(darr src/main.cpp)
+add_executable(test_darr src/test.cpp)
 include_directories(darr PRIVATE include)
+
+target_compile_options(darr PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+)
+
+target_compile_options(darr PRIVATE
+    -g
+    -fsanitize=address,undefined
+    -fno-omit-frame-pointer
+)
+
+target_link_options(darr PRIVATE
+    -fsanitize=address,undefined
+)

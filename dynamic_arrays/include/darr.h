@@ -6,29 +6,30 @@ class DArr
 {
     private:
 
-    T* m_arr{nullptr};
-    size_t m_capacity{0};
-    size_t m_size{0};
+    size_t m_size;
+    size_t m_capacity;
+    T* m_arr;
 
     private:
     void reallocate(size_t new_cap);
     
     public:
 
-    DArr();                     // default
-    DArr(const T& value);       // initializer
-    DArr(const DArr& other);    // copy cons
-    DArr(DArr&& other);         // move cons
-    DArr& operator= (DArr other);
-    ~DArr();                    // des
+    DArr();                                                 // default
+    DArr(const size_t capacity);                            // initializer
+    DArr(const size_t capacity, const T& default_value);    // initializer with default value
+    DArr(const DArr& other) noexcept;                       // copy cons
+    DArr(DArr&& other);                                     // move cons
+    DArr& operator= (DArr other);                           // assigment operator
+    ~DArr();                                                // des
 
     void push_back(const T& value);
     void pop_back();
 
     size_t size() const noexcept;
 
-    T& get(const int& idx) const;
-    void set(const int& idx, const T& value);
+    T& get(size_t idx) const;
+    void set(size_t idx, const T& value);
 
 };
 

@@ -1,7 +1,9 @@
 template<class T>
 void DArr<T>::reallocate(size_t new_cap)
 {
+    if(new_cap < m_size) new_cap = m_size;
     if(new_cap == 0)new_cap = 1;
+    
     T* temp = new T[new_cap];
     for(size_t i=0;i<m_size;i++)
     {
@@ -13,22 +15,27 @@ void DArr<T>::reallocate(size_t new_cap)
 }
 
 template<class T>
-DArr<T>::DArr():m_size(0), m_capacity(0), m_arr(nullptr)
+DArr<T>::DArr(): m_size(0), m_capacity(1), m_arr(new T[1])
 {
-    reallocate(1);
 }
 
 template<class T>
-DArr<T>::DArr(const T& value):m_size(0), m_capacity(0), m_arr(nullptr)
-{
-    reallocate(1);
-    m_size++;
-    m_arr[0] = value;
-
+DArr<T>::DArr(const size_t capacity):m_size(0), m_capacity(capacity==0?1:capacity), m_arr(new T[m_capacity])
+{   
 }
 
 template<class T>
-DArr<T>::DArr(const DArr& other): m_size(other.m_size), m_capacity(other.m_capacity), m_arr(new T[other.m_capacity])
+DArr<T>::DArr(const size_t capacity, const T& default_value):m_size(capacity), m_capacity(capacity==0?1:capacity), m_arr(new T[m_capacity])
+{
+    for(size_t i=0;i<m_size;i++)
+    {
+        m_arr[i] = default_value;
+    }
+}
+
+
+template<class T>
+DArr<T>::DArr(const DArr& other) noexcept: m_size(other.m_size), m_capacity(other.m_capacity), m_arr(new T[other.m_capacity])
 {
     for(size_t i=0;i<m_size;i++)
         m_arr[i] = other.m_arr[i];
@@ -45,9 +52,9 @@ DArr<T>::DArr(DArr&& other): m_size(other.m_size), m_capacity(other.m_capacity),
 template<class T>
 DArr<T>& DArr<T>::operator=(DArr other)
 {
-    std::swap(m_arr, other.m_arr);
     std::swap(m_size, other.m_size);
     std::swap(m_capacity, other.m_capacity);
+    std::swap(m_arr, other.m_arr);
     return *this;
 }
 
@@ -60,11 +67,11 @@ DArr<T>::~DArr()
 template<class T>
 void DArr<T>::push_back(const T& value)
 {
+    if(m_size == m_capacity)
+        reallocate(m_capacity == 0? 1: m_capacity * 2);
+    
+    m_arr[m_size] = value;
     m_size++;
-    if(m_size > m_capacity)
-        reallocate(m_capacity * 2);
-
-    m_arr[m_size-1] = value;
 }
 
 template<class T>
@@ -72,8 +79,7 @@ void DArr<T>::pop_back()
 {
     if(m_size == 0)
     {
-        std::cerr << "Array is empty\n";
-        return;
+        throw(std::runtime_error("Array is Empty"));
     }
     m_size--;
     if(m_capacity > 1 && m_size <= m_capacity/4)
@@ -87,28 +93,19 @@ size_t DArr<T>::size() const noexcept
 }
 
 template<class T>
-T& DArr<T>::get(const int& idx) const
+T& DArr<T>::get(size_t idx) const
 {
-    if(idx < 0)
+    if(idx >= m_size)
     {
-        throw std::out_of_range("Index out of bounds");
+        throw std::out_of_range("Index out of Range\n");
     }
-    if(idx >= static_cast<int>(m_size))
-    {
-        throw std::out_of_range("Index out of bounds");
-    }
-
     return m_arr[idx];
 }
 
 template<class T>
-void DArr<T>::set(const int& idx, const T& value)
+void DArr<T>::set(size_t idx, const T& value)
 {
-    if(idx < 0)
-    {
-        throw std::out_of_range("Index out of bounds");
-    }
-    if(idx >= static_cast<int>(m_size))
+    if(idx >= m_size)
     {
         throw std::out_of_range("Index out of bounds");
     }
