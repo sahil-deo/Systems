@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.10)
+
+set(CMAKE_CXX_STANDARD 20)
+
+project(darr)
+
+add_executable(darr src/main.cpp)
+include_directories(darr PRIVATE include)
