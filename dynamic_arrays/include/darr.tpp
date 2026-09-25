@@ -112,3 +112,8 @@ void DArr<T>::set(size_t idx, const T& value)
     m_arr[idx] = value;
 }
 
+template<class T>
+T& DArr<T>::operator[](size_t idx) const
+{
+    return get(idx);
+}

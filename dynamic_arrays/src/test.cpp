@@ -70,7 +70,7 @@ void test_default_value_constructor() {
     DArr<int> arr(5, defval);
     CHECK(arr.size() == 5); // assumes this variant *does* fill 'size' elements
     for (size_t i = 0; i < arr.size(); ++i) {
-        CHECK(arr.get(i) == 42);
+        CHECK(arr[i] == 42);
     }
 }
 
@@ -82,9 +82,9 @@ void test_push_back_basic() {
     arr.push_back(b);
     arr.push_back(c);
     CHECK(arr.size() == 3);
-    CHECK(arr.get(0) == 1);
-    CHECK(arr.get(1) == 2);
-    CHECK(arr.get(2) == 3);
+    CHECK(arr[0] == 1);
+    CHECK(arr[1] == 2);
+    CHECK(arr[2] == 3);
 }
 
 // 5. push_back triggers growth beyond initial capacity
@@ -96,7 +96,7 @@ void test_push_back_growth() {
     }
     CHECK(arr.size() == 100);
     for (int i = 0; i < 100; ++i) {
-        CHECK(arr.get(i) == i);
+        CHECK(arr[i] == i);
     }
 }
 
@@ -109,7 +109,7 @@ void test_pop_back_basic() {
     CHECK(arr.size() == 2);
     arr.pop_back();
     CHECK(arr.size() == 1);
-    CHECK(arr.get(0) == 1);
+    CHECK(arr[0] == 1);
     arr.pop_back();
     CHECK(arr.size() == 0);
 }
@@ -129,7 +129,7 @@ void test_get_valid() {
         arr.push_back(v);
     }
     for (int i = 0; i < 10; ++i) {
-        CHECK(arr.get(i) == i * i);
+        CHECK(arr[i] == i * i);
     }
 }
 
@@ -138,8 +138,8 @@ void test_get_out_of_bounds() {
     DArr<int> arr;
     int a = 5;
     arr.push_back(a);
-    CHECK_THROWS(arr.get(1));
-    CHECK_THROWS(arr.get(100));
+    CHECK_THROWS(arr[1]);
+    CHECK_THROWS(arr[100]);
 }
 
 // 10. set() updates existing element
@@ -149,9 +149,9 @@ void test_set_basic() {
     arr.push_back(a);
     arr.push_back(b);
     int newval = 99;
-    arr.set(0, newval);
-    CHECK(arr.get(0) == 99);
-    CHECK(arr.get(1) == 2);
+    arr[0] = newval;
+    CHECK(arr[0] == 99);
+    CHECK(arr[1] == 2);
 }
 
 // 11. set() out-of-bounds should throw
@@ -185,14 +185,14 @@ void test_non_trivial_type() {
     std::string s2 = "world";
     arr.push_back(s1);
     arr.push_back(s2);
-    CHECK(arr.get(0) == "hello");
-    CHECK(arr.get(1) == "world");
+    CHECK(arr[0] == "hello");
+    CHECK(arr[1] == "world");
 
     // mutate original after push_back — should NOT affect stored copy
     // (only valid if push_back takes by value/copies; if it stores a reference,
     // this test will need to change)
     s1 = "mutated";
-    CHECK(arr.get(0) == "hello");
+    CHECK(arr[0] == "hello");
 }
 
 // 14. get() returns a reference that can mutate internal storage
@@ -200,8 +200,8 @@ void test_get_reference_mutation() {
     DArr<int> arr;
     int v = 10;
     arr.push_back(v);
-    arr.get(0) = 20;
-    CHECK(arr.get(0) == 20);
+    arr[0] = 20;
+    CHECK(arr[0] == 20);
 }
 
 // 15. Large-scale stress test: push then pop everything
@@ -214,7 +214,7 @@ void test_stress_push_pop() {
     }
     CHECK(arr.size() == static_cast<size_t>(N));
     for (int i = N - 1; i >= 0; --i) {
-        CHECK(arr.get(static_cast<size_t>(i)) == i);
+        CHECK(arr[static_cast<size_t>(i)] == i);
         arr.pop_back();
     }
     CHECK(arr.size() == 0);
@@ -231,14 +231,14 @@ void test_copy_semantics() {
     DArr<int> copy = arr; // copy constructor
     CHECK(copy.size() == arr.size());
     for (size_t i = 0; i < arr.size(); ++i) {
-        CHECK(copy.get(i) == arr.get(i));
+        CHECK(copy[i] == arr[i]);
     }
 
     // mutate copy, ensure original unaffected (deep copy check)
     int newval = 999;
-    copy.set(0, newval);
-    CHECK(arr.get(0) == 1);
-    CHECK(copy.get(0) == 999);
+    copy[0] = newval;
+    CHECK(arr[0] == 1);
+    CHECK(copy[0] == 999);
 }
 
 // 17. Zero-capacity construction should behave like default
@@ -248,7 +248,7 @@ void test_zero_capacity_constructor() {
     int v = 1;
     arr.push_back(v); // should still work, growing from 0
     CHECK(arr.size() == 1);
-    CHECK(arr.get(0) == 1);
+    CHECK(arr[0] == 1);
 }
 
 // 18. Interleaved push/pop/set/get sequence — general correctness sanity check
@@ -265,14 +265,14 @@ void test_interleaved_operations() {
     CHECK(arr.size() == 2);
 
     v = 99;
-    arr.set(0, v);
-    CHECK(arr.get(0) == 99);
-    CHECK(arr.get(1) == 20);
+    arr[0] = v;
+    CHECK(arr[0] == 99);
+    CHECK(arr[1] == 20);
 
     v = 40;
     arr.push_back(v);
     CHECK(arr.size() == 3);
-    CHECK(arr.get(2) == 40);
+    CHECK(arr[2] == 40);
 }
 
 // ---------- test ----------

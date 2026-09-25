@@ -29,6 +29,7 @@ class DArr
     size_t size() const noexcept;
 
     T& get(size_t idx) const;
+    T& operator[](size_t idx) const;
     void set(size_t idx, const T& value);
 
 };
